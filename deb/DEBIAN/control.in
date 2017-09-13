@@ -1,0 +1,10 @@
+Package: myconfig
+Standards-Version: 3.6.2
+Version: __VERSION__
+Section: misc
+Priority: standard
+Architecture: all
+Maintainer: __MAINT__
+Description: My base system.
+ Install all the packages that I use.
+Depends: __DEPS__

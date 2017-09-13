@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2017-09-14 Prş 01:07 -->
+<!-- 2017-09-14 Prş 01:49 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Making a Debian Metapackage for One Command OS Setup</title>
@@ -234,18 +234,18 @@ for the JavaScript code in this tag.
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents">
 <ul>
-<li><a href="#orgc824814">1. Introduction</a></li>
-<li><a href="#orgf0a9f71">2. The Metapackage</a></li>
-<li><a href="#org33f2624">3. The Configuration Tree</a></li>
-<li><a href="#org4d97841">4. The Makefile</a></li>
-<li><a href="#org6c1182c">5. The Initialisation Script</a></li>
-<li><a href="#org9c64083">6. Conclusion</a></li>
+<li><a href="#org8666a74">1. Introduction</a></li>
+<li><a href="#org538ea30">2. The Metapackage</a></li>
+<li><a href="#org5bd9263">3. The Configuration Tree</a></li>
+<li><a href="#orgff62732">4. The Makefile</a></li>
+<li><a href="#orgba33149">5. The Initialisation Script</a></li>
+<li><a href="#orge045ad2">6. Conclusion</a></li>
 </ul>
 </div>
 </div>
 
-<div id="outline-container-orgc824814" class="outline-2">
-<h2 id="orgc824814"><span class="section-number-2">1</span> Introduction</h2>
+<div id="outline-container-org8666a74" class="outline-2">
+<h2 id="org8666a74"><span class="section-number-2">1</span> Introduction</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 This tutorial will guide through making a Debian Metapackage (i.e. a
@@ -306,8 +306,8 @@ or modify them to use su(1) instead.
 </div>
 </div>
 
-<div id="outline-container-orgf0a9f71" class="outline-2">
-<h2 id="orgf0a9f71"><span class="section-number-2">2</span> The Metapackage</h2>
+<div id="outline-container-org538ea30" class="outline-2">
+<h2 id="org538ea30"><span class="section-number-2">2</span> The Metapackage</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 The source code for the metapackage will reside in the <code>deb/DEBIAN</code>
@@ -455,7 +455,7 @@ time.
 And finally we&rsquo;ll create <code>deb/DEBIAN/deps.mk</code>, which will list our
 dependencies in a convenient way.  If we didn&rsquo;t do this, we&rsquo;d have to
 have them in the <code>control.in</code> file, but its format requires that all
-the dependencies are listed in one line as a comma separated file,
+the dependencies are listed on one line as a comma separated list,
 which is rather inconvenient to edit, and does not allow categorising
 and commenting our dependencies.  Many times one forgets why they
 included a given package, especially when it&rsquo;s used indirectly, so
@@ -491,8 +491,8 @@ have to edit the <code>debian-init</code> rule to not depend on <code>debian-con
 </div>
 </div>
 
-<div id="outline-container-org33f2624" class="outline-2">
-<h2 id="org33f2624"><span class="section-number-2">3</span> The Configuration Tree</h2>
+<div id="outline-container-org5bd9263" class="outline-2">
+<h2 id="org5bd9263"><span class="section-number-2">3</span> The Configuration Tree</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 The <code>system/debian</code> tree will resemble the root file system of a
@@ -610,8 +610,8 @@ Now it&rsquo;s time we write the toplevel makefile for our project.
 </div>
 </div>
 
-<div id="outline-container-org4d97841" class="outline-2">
-<h2 id="org4d97841"><span class="section-number-2">4</span> The Makefile</h2>
+<div id="outline-container-orgff62732" class="outline-2">
+<h2 id="orgff62732"><span class="section-number-2">4</span> The Makefile</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 We&rsquo;ll have a concise and self documenting makefile that&rsquo;ll have all
@@ -729,7 +729,7 @@ first initialising the system.  We&rsquo;ll explain these rules below.
 
 <p>
 The <code>debian-config</code> rule installs the <code>system/debian</code> tree to the
-system root directory like was explained in <a href="#org33f2624">3</a>
+system root directory like was explained in <a href="#org5bd9263">3</a>
 section.  It does not dereference symbolic links (i.e. copies them
 verbatim; the <code>-P</code> flag), preserves the mode setting of the source
 file (the <code>--preserve=mode</code> option), and creates numbered backups of
@@ -799,8 +799,8 @@ for our system.
 </div>
 </div>
 
-<div id="outline-container-org6c1182c" class="outline-2">
-<h2 id="org6c1182c"><span class="section-number-2">5</span> The Initialisation Script</h2>
+<div id="outline-container-orgba33149" class="outline-2">
+<h2 id="orgba33149"><span class="section-number-2">5</span> The Initialisation Script</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 This script is optional, but may be helpful.  Also, take this as an
@@ -884,10 +884,8 @@ a previously generated package (it is a good idea to keep the latest
 build around for bootstrapping your setup on a fresh install; IIRC
 Ubuntu does not come with make, and Debian may lack both make and
 <code>dpkg-deb</code>).  If both fail, we report error and exit with status of
+<code>1</code>.
 </p>
-<ol class="org-ol">
-<li></li>
-</ol>
 
 <p>
 If the last step was successful, we create a user.  During a fresh
@@ -903,8 +901,8 @@ service in</code> and <code>; do</code>.
 </div>
 </div>
 
-<div id="outline-container-org9c64083" class="outline-2">
-<h2 id="org9c64083"><span class="section-number-2">6</span> Conclusion</h2>
+<div id="outline-container-orge045ad2" class="outline-2">
+<h2 id="orge045ad2"><span class="section-number-2">6</span> Conclusion</h2>
 <div class="outline-text-2" id="text-6">
 <p>
 So this should be it!  If you followed all the instuctions, you should
@@ -915,7 +913,7 @@ useful to you!
 </p>
 
 <p>
-Please <a href="index.html#orgfd4a7de">e-mail me</a> if you find any problems anywhere in the post.  Happy
+Please <a href="http://www.gkayaalp.com/index.html#contact">e-mail me</a> if you find any problems anywhere in the post.  Happy
 hacking!
 </p>
 </div>
@@ -944,9 +942,9 @@ See the <a href="https://www.gnu.org/software/coreutils/manual/coreutils.html#Ba
 </div>
 </div></div>
 <div id="postamble" class="status">
-<p class="date">Date: 13 September 2017</p>
+<p class="date">Date: 14 September 2017</p>
 <p class="author">Author: Göktuğ Kayaalp</p>
-<p class="date">Created: 2017-09-14 Prş 01:07</p>
+<p class="date">Created: 2017-09-14 Prş 01:49</p>
 <p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>

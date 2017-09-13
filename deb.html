@@ -1,0 +1,953 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2017-09-14 Prş 01:07 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Making a Debian Metapackage for One Command OS Setup</title>
+<meta name="generator" content="Org mode" />
+<meta name="author" content="Göktuğ Kayaalp" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { width: 90%; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2017 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Making a Debian Metapackage for One Command OS Setup</h1>
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#orgc824814">1. Introduction</a></li>
+<li><a href="#orgf0a9f71">2. The Metapackage</a></li>
+<li><a href="#org33f2624">3. The Configuration Tree</a></li>
+<li><a href="#org4d97841">4. The Makefile</a></li>
+<li><a href="#org6c1182c">5. The Initialisation Script</a></li>
+<li><a href="#org9c64083">6. Conclusion</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-orgc824814" class="outline-2">
+<h2 id="orgc824814"><span class="section-number-2">1</span> Introduction</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+This tutorial will guide through making a Debian Metapackage (i.e. a
+package that only has dependencies on other packages and installs no
+files) and setting up your configuration so that it&rsquo;s easily
+instatiable on a new system.
+</p>
+
+<blockquote>
+<p>
+You can find the code we&rsquo;ll write in this tutorial at <a href="https://github.com/cadadr/debian-config-metapackage">Github</a>.
+</p>
+</blockquote>
+
+<p>
+Our project will include two main parts: the metapackage, in the <code>deb</code>
+subdirectory of our project, and the system-wide configuration files
+under the <code>system/debian</code> subdirectory.  This separation is because
+(i) we want out metapackage to be a pure metapackage and (ii) if we
+ever need to replace a system-wide configuration file that belongs to
+another package, the debian packaging system won&rsquo;t let us.  In my
+configuration I also have a subdirectory for my dotfiles, another one
+for executable scripts that appears in <code>$PATH</code>, another one for guix
+configuration, and another one for Raspberry Pi stuff; and
+<code>system/rpi</code> has system-wide configuration files for it.  I list these
+as an example to show that you can combine in this project multiple
+setups for different operating systems and other configuration files
+and scripts as you wish.  Other than these we&rsquo;ll have a script to
+initialise the system for us using this setup, doing also some
+housekeeping for us (not so) transparently.  We&rsquo;ll also include an
+nginx setup to demonstrate how to use this system to install our
+configuration, and also Syncthing to demonstrate how to install a
+package from a third-party apt repository.  These are examples and you
+might just remove them or maybe use them in your setup if you find
+them useful to you.
+</p>
+
+<p>
+One note is that we won&rsquo;t build a perfect Debian package nor bother
+with maintaining it according to the requirements of the Debian or
+Ubuntu projects.  This is because this is meant to be a tool for one&rsquo;s
+personal setup.  It&rsquo;s perfectly possible to adhere to these
+regulations, in which case I refer you to relevant documentation.
+</p>
+
+<p>
+The last note before I proceed with the tutorial is that while I use
+Ubuntu Gnome and have built my config on it, this setup should work on
+all Debian-based operating systems with little or no modification.
+Package names may differ from one of those to another, so beware of
+these pitfalls if you are going to try to maintain a cross-platform
+configuration.  One big difference between Ubuntu and Debian is that
+the former has sudo installed by default whereas the latter may not
+depending on how you installed it, and the scripts and makefiles in
+this setup use sudo, so you may want to either install it beforehand
+or modify them to use su(1) instead.
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf0a9f71" class="outline-2">
+<h2 id="orgf0a9f71"><span class="section-number-2">2</span> The Metapackage</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+The source code for the metapackage will reside in the <code>deb/DEBIAN</code>
+subdirectory of our project.  Any file in the <code>deb</code> directory other
+than the <code>DEBIAN</code> subdirectory will be part of the Debian package and
+installed in the root directory of your filesystem.  You may include
+configuration files in say <code>deb/etc/</code> and they&rsquo;ll go under <code>/etc</code> when
+you install the package, but if those files happen to coincide with
+other packages&rsquo; files, as noted above, our package won&rsquo;t install; and
+the package won&rsquo;t anymore be a metapackage.  If you really want to
+include stuff here, be careful to not cause clashes, and install
+configuration under directories like <code>/etc/nginx/conf.d</code> instead of
+<code>/etc/nginx</code>.  But do avoid this.
+</p>
+
+<p>
+The first file we&rsquo;ll create is the <code>deb/DEBIAN/copyright</code>, which is
+useless if you won&rsquo;t publish this configuration, but the packaging
+system requires us to have this, so we will.
+</p>
+
+<p>
+<code>deb/DEBIAN/copyright</code>:
+</p>
+
+<pre class="example">
+Format: http://anonscm.debian.org/viewvc/dep/web/deps/dep5.mdwn?revision=174
+Upstream-Name: myconfig
+
+Files: *
+Copyright: 2017 Joe Maintainer &lt;example.com&gt;
+License: Ciao
+
+License: Ciao
+ Humans may not use this program!
+
+</pre>
+
+<p>
+Done, you can just copy and paste this, and modify with your personal
+information.  Now we&rsquo;re going to create <code>deb/DEBIAN/control.in</code>, which
+is going to provide some parameters for the Debian package we&rsquo;re
+creating.  Again, you can just copy and paste this, as this is just
+boilerplate that we need.
+</p>
+
+<p>
+<code>deb/DEBIAN/control.in</code>:
+</p>
+
+<pre class="example">
+Package: myconfig
+Standards-Version: 3.6.2
+Version: __VERSION__
+Section: misc
+Priority: standard
+Architecture: all
+Maintainer: __MAINT__
+Description: My base system.
+ Install all the packages that I use.
+Depends: __DEPS__
+
+</pre>
+
+<p>
+We&rsquo;re going to process this file and generate the <code>deb/DEBIAN/control</code>
+file, which is the actual file the packaging system will read.  We do
+this because we don&rsquo;t want to change the <code>Version:</code> field every time
+we update our configuration.
+</p>
+
+<p>
+The next file is <code>deb/DEBIAN/changelog</code> which is yet more boilerplate
+that we have to have and that you can just copy from below and modify
+for your personal information if you will.
+</p>
+
+<p>
+<code>deb/DEBIAN/changelog</code>:
+</p>
+
+<pre class="example">
+myconfig (0.1) unstable; urgency=medium
+
+  * Initiate a package.
+
+-- Joe Maintainer &lt;joe@example.com&gt;  Mon, 13 Mar 2017 20:23:44 +0300
+
+</pre>
+
+<p>
+We won&rsquo;t ever need to touch this file again.
+</p>
+
+<p>
+Now that we have all the boring boilerplate in place, we may go on to
+creating the actual bits that we&rsquo;ll use.  The first is the
+<code>deb/DEBIAN/makefile</code> which will contain the build recipe for
+transforming <code>control.in</code> to <code>control</code> with input from variables that
+are going to come from the toplevel makefile <sup><a id="fnr.1" class="footref" href="#fn.1">1</a></sup> and
+another file that we&rsquo;ll create in a bit.
+</p>
+
+<p>
+<code>deb/DEBIAN/makefile</code>:
+</p>
+
+<div class="org-src-container">
+<pre><code class="src src-makefile"><span style="color: #a0522d;">FILES</span>=control
+<span style="color: #a020f0;">include</span> <span style="color: #a0522d;">deps.mk</span> <span style="color: #b22222;"># </span><span style="color: #b22222;">DEPS defined here</span>
+<span style="color: #a0522d;">_DEPS!</span>=echo $(<span style="color: #a0522d;">DEPS</span>) | sed <span style="color: #8b2252;">'s: :, :g'</span>
+
+<span style="color: #0000ff;">all</span>: $(<span style="color: #a0522d;">FILES</span>)
+
+<span style="color: #0000ff;">deps</span>:
+        <span style="color: #228b22;">@</span>echo $(<span style="color: #a0522d;">DEPS</span>)
+
+<span style="color: #0000ff;">control</span>: control.in deps.mk makefile
+        sed <span style="color: #8b2252;">'s,__MAINT__,$(</span><span style="color: #a0522d;">MAINT</span><span style="color: #8b2252;">),'</span> &lt; control.in |\
+        sed <span style="color: #8b2252;">'s,__VERSION__,$(</span><span style="color: #a0522d;">VERSION</span><span style="color: #8b2252;">),'</span> |\
+        sed <span style="color: #8b2252;">"s/__DEPS__/$(</span><span style="color: #a0522d;">_DEPS</span><span style="color: #8b2252;">)/"</span>&gt; <span style="color: #0000ff;">$</span><span style="color: #008b8b;">@</span>;
+
+<span style="color: #0000ff;">clean</span>:
+        rm -rf $(<span style="color: #a0522d;">FILES</span>)
+
+<span style="color: #0000ff;">.PHONY</span>: all deps control clean
+
+</code></pre>
+</div>
+
+<p>
+You can just copy this verbatim.  The rules are simple: the <code>deps.mk</code>
+provides a variable called <code>$DEPS</code>, which is a space separated list of
+dependencies (space-separation will prove convenient in a bit) which
+we&rsquo;ll convert to a comma separated one as Debian expects in the
+<code>control</code> file, into which we will interpolate that and some other
+variables.  The rule for this file depends on <code>control.in</code>, on the
+makefile and on <code>deps.mk</code> which we&rsquo;ll create in a bit, but uses the
+first one only.  This is for it to run whenever we update our setup or
+the makefile, otherwise we&rsquo;d need to touch(1) <code>control.in</code> all the
+time.
+</p>
+
+<p>
+And finally we&rsquo;ll create <code>deb/DEBIAN/deps.mk</code>, which will list our
+dependencies in a convenient way.  If we didn&rsquo;t do this, we&rsquo;d have to
+have them in the <code>control.in</code> file, but its format requires that all
+the dependencies are listed in one line as a comma separated file,
+which is rather inconvenient to edit, and does not allow categorising
+and commenting our dependencies.  Many times one forgets why they
+included a given package, especially when it&rsquo;s used indirectly, so
+comments are important.  So, let&rsquo;s go and create it.
+</p>
+
+<p>
+<code>deb/DEBIAN/deps.mk</code>:
+</p>
+
+<div class="org-src-container">
+<pre><code class="src src-makefile"><span style="color: #b22222;">### </span><span style="color: #b22222;">Base:</span>
+<span style="color: #a0522d;">DEPS</span>=nginx syncthing gnutls-bin
+<span style="color: #b22222;">### </span><span style="color: #b22222;">VCS:</span>
+<span style="color: #a0522d;">DEPS+</span>=git
+
+</code></pre>
+</div>
+
+<p>
+This file is basically a makefile fragment that we include in the
+makefile we created above.
+</p>
+
+<p>
+At this moment we&rsquo;re done with the control files for the Debian
+metapackage we&rsquo;re creating.  Now we&rsquo;ll add the <code>system/debian</code> tree
+and populate it with examples.  You can skip this step, and omit this
+subtree entirely if you think you won&rsquo;t have any configuration files
+installed system-wide, in which case in the toplevel makefile you will
+have to edit the <code>debian-init</code> rule to not depend on <code>debian-config</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org33f2624" class="outline-2">
+<h2 id="org33f2624"><span class="section-number-2">3</span> The Configuration Tree</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+The <code>system/debian</code> tree will resemble the root file system of a
+Debian system and include files to be installed in such a path that a
+file <code>system/debian/XXX</code> will be copied to <code>/XXX</code>.  We&rsquo;ll make
+numbered backups <sup><a id="fnr.2" class="footref" href="#fn.2">2</a></sup> of target files so if we overwrite a
+file mistakenly, we will always be able to get it back.  I recommend
+that you only use this to install configuration files into <code>etc</code> and
+maybe some other files.  If you want to install an application that&rsquo;ll
+go into <code>/opt</code>, you might want to add the <code>-u</code> option to the call to
+<code>cp</code> command in the rule <code>debian-config</code> of the toplevel makefile
+we&rsquo;ll create so that it will skip files where the destination is not
+newer than the source file (see the cp(1) man page for further
+information).
+</p>
+
+<p>
+We&rsquo;ll create two files under this tree as examples of its use.  These
+will be configuration files for Nginx.  You&rsquo;ll probably want to omit
+these and use your own configuration files, but you can use these ones
+however you like if you like them.  Let&rsquo;s go:
+</p>
+
+<p>
+<code>system/debian/etc/nginx/sites-enabled/myserver.site</code>:
+</p>
+
+<div class="org-src-container">
+<pre><code class="src src-conf"><span style="color: #b22222;"># </span><span style="color: #b22222;">nginx websites config.</span>
+<span style="color: #b22222;">## </span><span style="color: #b22222;">Docs:</span>
+<span style="color: #b22222;"># </span><span style="color: #b22222;">http://wiki.nginx.org/Pitfalls</span>
+<span style="color: #b22222;"># </span><span style="color: #b22222;">http://wiki.nginx.org/QuickStart</span>
+<span style="color: #b22222;"># </span><span style="color: #b22222;">http://wiki.nginx.org/Configuration</span>
+<span style="color: #b22222;"># </span><span style="color: #b22222;">/usr/share/doc/nginx-doc/examples/</span>
+<span style="color: #b22222;">##</span>
+
+<span style="color: #b22222;"># </span><span style="color: #b22222;">Default server configuration</span>
+
+<span style="color: #228b22;">server</span> {
+        listen 6878 default_server;
+        listen [::]:6878 default_server;
+
+        set $root_dir /igk/www;
+        rewrite ^(/~[^/]+)$ $1/ redirect;
+        rewrite ^/~(?&lt;user&gt;[^/]+)(.+) $2;
+        <span style="color: #228b22;">if ($user)</span> {
+           set $root_dir /home/$user/public_html;
+        }
+        root $root_dir;
+
+        <span style="color: #b22222;"># </span><span style="color: #b22222;">Add index.php to the list if you are using PHP</span>
+        index index.html README;
+
+        server_name myserver;
+
+        <span style="color: #228b22;">location /</span> {
+                <span style="color: #b22222;"># </span><span style="color: #b22222;">First attempt to serve request as file, then</span>
+                <span style="color: #b22222;"># </span><span style="color: #b22222;">as directory, then fall back to displaying a 404.</span>
+                <span style="color: #a0522d;">try_files $uri $uri/</span> =404;
+        }
+
+        <span style="color: #b22222;"># </span><span style="color: #b22222;">deny access to .htaccess files, if Apache's document root</span>
+        <span style="color: #b22222;"># </span><span style="color: #b22222;">concurs with nginx's one</span>
+        <span style="color: #228b22;">location ~ /\.ht</span> {
+                deny all;
+        }
+}
+
+</code></pre>
+</div>
+
+<p>
+<code>system/debian/etc/nginx/nginx.conf</code>:
+</p>
+
+<div class="org-src-container">
+<pre><code class="src src-conf">user www-data;
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+<span style="color: #228b22;">events</span> {
+        worker_connections 768;
+}
+
+<span style="color: #228b22;">http</span> {
+        sendfile on;
+        tcp_nopush on;
+        tcp_nodelay on;
+        keepalive_timeout 65;
+        types_hash_max_size 2048;
+
+        include /etc/nginx/mime.types;
+        default_type application/octet-stream;
+
+        ssl_protocols TLSv1 TLSv1.1 TLSv1.2; <span style="color: #b22222;"># </span><span style="color: #b22222;">Dropping SSLv3, ref: POODLE</span>
+        ssl_prefer_server_ciphers on;
+
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+
+        gzip on;
+        gzip_disable <span style="color: #8b2252;">"msie6"</span>;
+
+        include /etc/nginx/conf.d/*.conf;
+        include /etc/nginx/sites-enabled/*.site;
+}
+
+</code></pre>
+</div>
+
+<p>
+Now it&rsquo;s time we write the toplevel makefile for our project.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4d97841" class="outline-2">
+<h2 id="org4d97841"><span class="section-number-2">4</span> The Makefile</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+We&rsquo;ll have a concise and self documenting makefile that&rsquo;ll have all
+the recipes for operating this configuration.  When first initiating
+your system, you&rsquo;ll be better off using the script that we&rsquo;ll create
+next, so that you can create users, add third-party apt repositories,
+enable and disable services &amp;c; but thereafter, when you want to add
+or remove a package to your system, you&rsquo;ll just edit
+<code>deb/DEBIAN/deps.mk</code>, and run <code>make deb-inst</code> at the project root.
+</p>
+
+<p>
+I&rsquo;ll include the entire makefile below and explain it in detail.
+</p>
+
+<p>
+<code>makefile</code>:
+</p>
+
+<div class="org-src-container">
+<pre><code class="src src-makefile">export <span style="color: #a0522d;">VERSION!</span>=date +<span style="color: #8b2252;">'%Y%m%d%H%M'</span>
+export <span style="color: #a0522d;">MAINT</span>=<span style="color: #8b2252;">"Joe Maintainer &lt;<a href="mailto:joe&#64;example.com">joe&#64;example.com</a>&gt;"</span>
+export <span style="color: #a0522d;">DEB</span>=myconfig.deb
+<span style="color: #a0522d;">HERE</span>=$(<span style="color: #a0522d;">PWD</span>)
+
+<span style="color: #0000ff;">all</span>: help
+
+<span style="color: #0000ff;">help</span>:
+        <span style="color: #228b22;">@</span>echo <span style="color: #8b2252;">"Targets:"</span>;\
+        echo <span style="color: #8b2252;">"  deb             build the Debian package ($(</span><span style="color: #a0522d;">DEB</span><span style="color: #8b2252;">))"</span>;\
+        echo <span style="color: #8b2252;">"  deb-inst        install $(</span><span style="color: #a0522d;">DEB</span><span style="color: #8b2252;">), generating it if necessary"</span>;\
+        echo <span style="color: #8b2252;">"  debian-config   install system configuration for Debian/Ubuntu"</span>;\
+        echo <span style="color: #8b2252;">"  debian-init     initialise new Debian/Ubuntu system"</span>;
+
+<span style="color: #0000ff;">debian-init</span>: deb-inst debian-config
+
+<span style="color: #0000ff;">debian-config</span>:
+        sudo cp -RPv --preserve=mode --backup=numbered system/debian/* /
+
+<span style="color: #0000ff;">deb</span>: $(<span style="color: #a0522d;">DEB</span>)
+
+<span style="color: #0000ff;">$(</span><span style="color: #0000ff;">DEB</span><span style="color: #0000ff;">)</span>: deb-config deb/DEBIAN/control
+        dpkg-deb -b deb <span style="color: #0000ff;">$</span><span style="color: #008b8b;">@</span>
+
+<span style="color: #0000ff;">deb-config</span>:
+        cd deb/DEBIAN; $(<span style="color: #a0522d;">MAKE</span>) $(<span style="color: #a0522d;">MAKEFLAGS</span>); cd $(<span style="color: #a0522d;">HERE</span>)
+
+<span style="color: #0000ff;">deb-touch</span>:
+        touch deb/DEBIAN/control.in
+
+<span style="color: #0000ff;">deb-check</span>: deb
+        lintian $(<span style="color: #a0522d;">DEB</span>)
+
+<span style="color: #0000ff;">deb-inst</span>: deb
+        sudo apt-get install ./$(<span style="color: #a0522d;">DEB</span>) &amp;&amp; sudo apt-get autoremove
+
+<span style="color: #0000ff;">clean</span>:
+        rm -rf *.deb; cd deb/DEBIAN; $(<span style="color: #a0522d;">MAKE</span>) $(<span style="color: #a0522d;">MAKEFLAGS</span>) clean;\
+        cd $(<span style="color: #a0522d;">HERE</span>)
+
+<span style="color: #0000ff;">.PHONY</span>: all deb deb-config deb-check deb-inst deb-touch clean
+<span style="color: #0000ff;">.PHONY</span>: debian-config debian-init
+
+</code></pre>
+</div>
+
+<p>
+Up top we have the <code>$VERSION</code> variable, which will generate a numeric
+version number for our package each time we generate and regenerate
+it, so that we don&rsquo;t have to manually increment it.  You can use
+whatever versioning scheme you might wish should you want to properly
+version the package, but for personal use this ever-increasing number
+should suffice and is going to be more convenient.  If you will use a
+proper version number, mind that you should change the assignment
+operator from <code>!=</code> to <code>=</code>, as the former runs the rvalue as a shell
+command and assigns its result to the variable (see the man page for
+make(1)).  I believe that this makefile is POSIX compatible, but I
+only ever use it with GNU make and do not intentionally try to keep it
+so.
+</p>
+
+<p>
+You can set <code>$MAINT</code> to your identity, but if I&rsquo;m not wrong, the
+identities in the files under the <code>deb/DEBIAN</code> directory should match
+one another, so you probably will have to edit <code>copyright</code> and
+<code>changelog</code> to have this identity too.
+</p>
+
+<p>
+The variable <code>$DEB</code> is the name of the debian package file that this
+makefile will generate.  If you change this name, make sure that the
+initialisation script will use the correct name too.
+</p>
+
+<p>
+The <code>$HERE</code> variable is the path to the project root, we use it to
+return there from a call to a recursive make process.
+</p>
+
+<p>
+The <code>all</code> rule is the default rule (because it is the first one in the
+makefile), and we make it run the <code>help</code> rule, which just prints out
+an overview of the <i>public</i> rules; but if you want, you can change
+this to make it run a rule that does some concrete things.
+</p>
+
+<p>
+The <code>help</code> rule, as we said, documents how to use this makefile.
+</p>
+
+<p>
+<code>debian-init</code> runs the two most important rules in correct order when
+first initialising the system.  We&rsquo;ll explain these rules below.
+</p>
+
+<p>
+The <code>debian-config</code> rule installs the <code>system/debian</code> tree to the
+system root directory like was explained in <a href="#org33f2624">3</a>
+section.  It does not dereference symbolic links (i.e. copies them
+verbatim; the <code>-P</code> flag), preserves the mode setting of the source
+file (the <code>--preserve=mode</code> option), and creates numbered backups of
+the target files (the <code>--backup=numbered</code> option).  See the man page
+for cp(1) for detailed explanation of the flags.  One possible
+modification here is that, as was said before, you can add the <code>-u</code>
+flag to the call to cp, which will not copy files if they are not
+newer than the target files they match.
+</p>
+
+<p>
+<code>deb</code> is just an handy alias for the value of the <code>$DEB</code> variable,
+which contains the name of the debian file.
+</p>
+
+<p>
+The <code>$(DEB)</code> rule generates the Debian package we define in the <code>deb</code>
+subdirectory of the project.  It depends on the <code>deb-config</code> rule
+which runs make in the <code>deb/DEBIAN</code> tree, and on the
+<code>deb/DEBIAN/control</code> file, generated by the call to the recursive make
+by <code>deb-config</code>.  We still depend on that file in case we want to
+modify it directly for debugging purposes.
+</p>
+
+<p>
+<code>deb-touch</code> is a shortcut for updating the modification time of
+<code>deb/DEBIAN/control.in</code> without actually modifying it.  We can use
+this like <code>make deb-touch deb</code> to force regeneration of the package
+without making any actual changes.  Might be useful when <code>$MAINT</code> or
+<code>$VERSION</code> are changed.
+</p>
+
+<p>
+<code>deb-check</code> executes a Debian package linting tool called lintian on
+the package.  You probably will get many warnings as we skip many
+things that&rsquo;d be required for a Debian package that you&rsquo;d want to add
+to some official repository or publish yourself, for the sake of
+simplicity.
+</p>
+
+<p>
+<code>deb-inst</code> installs the generated package, and runs <code>apt-get
+autoremove</code> to remove any package that is not a dependency of another
+one or not manually installed by you.  So, when you remove a package
+from <code>deb/DEBIAN/deps.mk</code> and run this rule, it&rsquo;ll remove that
+package.  This probably is the rule you&rsquo;ll use most often.
+</p>
+
+<p>
+<code>clean</code> removes the generated package and cleans the <code>deb/DEBIAN</code>
+tree.
+</p>
+
+<p>
+<code>.PHONY</code> is a special rule in make that lists all the rules that don&rsquo;t
+directly generate a file from some inputs.  See the man page for
+make(1) for details.
+</p>
+
+<p>
+And this is the makefile for our project.  You can copy it verbatim
+and modify as you need.  At the moment you should be able to run <code>make
+deb-inst</code> and install the package if you have make and <code>dpkg-deb</code>
+commands available.  Now we go on to create the initialisation script
+for our system.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org6c1182c" class="outline-2">
+<h2 id="org6c1182c"><span class="section-number-2">5</span> The Initialisation Script</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+This script is optional, but may be helpful.  Also, take this as an
+example, as you needs might vary quite a bit.  Thus, I&rsquo;ll document
+this rather lightly.  Always run this script at the project root.
+</p>
+
+<p>
+<code>scripts/init.sh</code>
+</p>
+
+<div class="org-src-container">
+<pre><code class="src src-sh"><span style="color: #b22222;"># </span><span style="color: #b22222;">Initialise a Debian/Ubuntu installation.</span>
+
+<span style="color: #483d8b;">set</span> -e
+
+<span style="color: #483d8b;">.</span> /etc/os-release
+
+<span style="color: #0000ff;">say</span> () {
+    <span style="color: #483d8b;">echo</span> === $<span style="color: #a0522d;">@</span>
+}
+
+<span style="color: #b22222;">### </span><span style="color: #b22222;">Add third-party repos:</span>
+<span style="color: #b22222;">#### </span><span style="color: #b22222;">Syncthing:</span>
+curl -s https://syncthing.net/release-key.txt | sudo apt-key add -
+<span style="color: #483d8b;">echo</span> <span style="color: #8b2252;">'deb https://apt.syncthing.net/ syncthing stable'</span> |<span style="color: #8b2252;">\</span>
+    sudo tee /etc/apt/sources.list.d/syncthing.list
+sudo chmod 644 /etc/apt/sources.list.d/syncthing.list
+
+<span style="color: #b22222;">### </span><span style="color: #b22222;">Install packages:</span>
+say Installing system packages...
+sudo apt-get update
+
+(
+    <span style="color: #a020f0;">if</span> which make &gt;/dev/null 2&gt;/dev/null; <span style="color: #a020f0;">then</span>
+        make debian-init
+    <span style="color: #a020f0;">else</span>
+        sudo apt-get install ./myconfig.deb &amp;&amp; make debian-config
+    <span style="color: #a020f0;">fi</span> <span style="color: #8b2252;">\</span>
+        || (<span style="color: #483d8b;">echo</span> Failed installing system programmes &amp;&amp; <span style="color: #a020f0;">exit</span> 1)
+)
+
+<span style="color: #b22222;">### </span><span style="color: #b22222;">Add the user:</span>
+<span style="color: #a0522d;">u</span>=myuser
+<span style="color: #a020f0;">if</span> id g 2&gt;/dev/null &gt;/dev/null; <span style="color: #a020f0;">then</span>
+    say User $<span style="color: #a0522d;">u</span> exists already.
+<span style="color: #a020f0;">else</span>
+    say Adding user $<span style="color: #a0522d;">u</span>...
+    sudo useradd -c <span style="color: #8b2252;">'Joe Maintainer'</span> -d /home/$<span style="color: #a0522d;">u</span> <span style="color: #8b2252;">\</span>
+         -G sudo,adm,cdrom,dip,plugdev,lpadmin -m -s /bin/bash -U -u 1881 $<span style="color: #a0522d;">u</span> <span style="color: #8b2252;">\</span>
+        || <span style="color: #483d8b;">echo</span> Failed adding user $<span style="color: #a0522d;">u</span> &amp;&amp; <span style="color: #a020f0;">exit</span> 1;
+    sudo groupmod -g 1881 $<span style="color: #a0522d;">u</span> || <span style="color: #483d8b;">echo</span> Failed setting GID for $<span style="color: #a0522d;">u</span> &amp;&amp; <span style="color: #a020f0;">exit</span>
+<span style="color: #a020f0;">fi</span>
+
+<span style="color: #b22222;">### </span><span style="color: #b22222;">Start system services:</span>
+say Starting system services...
+<span style="color: #a020f0;">for</span> service<span style="color: #a020f0;"> in</span> nginx syncthing@$<span style="color: #a0522d;">u</span>; <span style="color: #a020f0;">do</span>
+    (systemctl status $<span style="color: #a0522d;">service</span> | grep <span style="color: #8b2252;">'enabled;'</span>) &gt;/dev/null <span style="color: #8b2252;">\</span>
+        || sudo systemctl enable $<span style="color: #a0522d;">service</span>;
+    (systemctl status $<span style="color: #a0522d;">service</span> | grep <span style="color: #8b2252;">'active (running)'</span>) &gt;/dev/null <span style="color: #8b2252;">\</span>
+        || sudo systemctl start $<span style="color: #a0522d;">service</span>;
+<span style="color: #a020f0;">done</span>
+
+say Done.  You may want to reboot your computer.
+</code></pre>
+</div>
+
+<p>
+First, we <code>set -e</code> so that the script immediately terminates should an
+error happen.  Then we source <code>/etc/os-release</code> which defines some
+useful variables on a Debian-like system.  After, we define <code>say</code> for
+debugging.  The next three command lines add the Syncthing repository.
+Remove this if you don&rsquo;t use that application, but you can use these
+commands as a template for adding the repositories that you use.
+</p>
+
+<p>
+Next we try to install the packages using the makefile.  If make is
+available, we run <code>make debian-init</code>, otherwise we try to install from
+a previously generated package (it is a good idea to keep the latest
+build around for bootstrapping your setup on a fresh install; IIRC
+Ubuntu does not come with make, and Debian may lack both make and
+<code>dpkg-deb</code>).  If both fail, we report error and exit with status of
+</p>
+<ol class="org-ol">
+<li></li>
+</ol>
+
+<p>
+If the last step was successful, we create a user.  During a fresh
+installation of Ubuntu I usually create a dummy user to run this
+script which thereafter I delete.
+</p>
+
+<p>
+Lastly we enable and start the services we need.  You should modify
+the service list to include the services you like, between <code>for
+service in</code> and <code>; do</code>.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org9c64083" class="outline-2">
+<h2 id="org9c64083"><span class="section-number-2">6</span> Conclusion</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+So this should be it!  If you followed all the instuctions, you should
+have a working setup for a Debian metapackage to initialise your
+system and install your software with a single command.  You can part
+from this to generate your personal setup.  Hope it&rsquo;s going to be
+useful to you!
+</p>
+
+<p>
+Please <a href="index.html#orgfd4a7de">e-mail me</a> if you find any problems anywhere in the post.  Happy
+hacking!
+</p>
+</div>
+</div>
+<div id="footnotes">
+<h2 class="footnotes">Footnotes: </h2>
+<div id="text-footnotes">
+
+<div class="footdef"><sup><a id="fn.1" class="footnum" href="#fnr.1">1</a></sup> <div class="footpara"><p class="footpara">
+We&rsquo;ll use recursive makefiles, which some define as
+an antipattern; but this is out of our scope as we&rsquo;re not interested
+in fast and reliable builds of a computer programme (in which case
+that recursive makefiles are bad is a matter of debate, not a fact),
+but generation of a single file from a single output via plain text
+processing and some shell scripting depending on that.  On actual
+programming projects where make is used to compile programmes though,
+there are better alternatives, e.g. GNU Make allows having files in
+subdirectories in targets and sources when defining rules.
+</p></div></div>
+
+<div class="footdef"><sup><a id="fn.2" class="footnum" href="#fnr.2">2</a></sup> <div class="footpara"><p class="footpara">
+See the <a href="https://www.gnu.org/software/coreutils/manual/coreutils.html#Backup-options">GNU coreutils manual</a>.
+</p></div></div>
+
+
+</div>
+</div></div>
+<div id="postamble" class="status">
+<p class="date">Date: 13 September 2017</p>
+<p class="author">Author: Göktuğ Kayaalp</p>
+<p class="date">Created: 2017-09-14 Prş 01:07</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
